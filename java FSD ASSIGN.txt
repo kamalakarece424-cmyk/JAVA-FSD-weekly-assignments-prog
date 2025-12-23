@@ -1,0 +1,275 @@
+3.sprind dependency injection (XML or Annotation)
+
+ojective
+understand dependency injection using spring
+
+problem statement
+
+1.create a class Engine with a method start()
+2. create a class Car 
+car depends on Engine
+3.Inject Engine into Car using 
+@Autowired or(XML configuration)
+4.create a spring application context
+5.call car.run() method
+concept used
+dependency injection
+@Component
+@Autowired
+loose coupling
+-------------------------------------------------
+Using XML configuration
+---------------------------------------------------
+package com.example;
+
+public class Car {
+    private Engine1 engine1;
+
+    // Setter for DI
+    public void setEngine(Engine1 engine1) {
+        this.engine1 = engine1;
+    }
+
+    public void run() {
+         engine1.start();
+        System.out.println("Car is running...");
+    }
+}
+--
+package com.example;
+
+public class Engine1 {
+	
+    public void start() {
+        System.out.println("Engine started...");
+    }
+
+}
+--
+package com.example;
+
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+public class SpringDIExampleXML {
+    public static void main(String[] args) {
+        ApplicationContext context =
+            new ClassPathXmlApplicationContext("applicationContext.xml");
+
+        Car car = (Car) context.getBean("car");
+        car.run();
+    }
+}
+---
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+           http://www.springframework.org/schema/beans
+           https://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="engine1" class="com.example.Engine1"/>
+    <bean id="car" class="com.example.Car">
+        <property name="engine" ref="engine1"/>
+    </bean>
+</beans>
+----
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.example</groupId>
+  <artifactId>spring-xml-di</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <dependencies>
+  <dependency>
+    <groupId>org.springframework</groupId>
+    <artifactId>spring-context</artifactId>
+    <version>5.3.39</version>
+  </dependency>
+</dependencies>
+
+</project>
+-=============
+using Annontations
+=======================
+package com.example.annotationdi;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+@Component
+public class Car {
+
+    private Engine engine;
+
+    @Autowired
+    public Car(Engine engine) {
+        this.engine = engine;
+    }
+
+    public void run() {
+        engine.start();
+        System.out.println("Car is running...");
+    }
+}
+-------------
+package com.example.annotationdi;
+
+import org.springframework.stereotype.Component;
+
+@Component
+public class Engine {
+
+    public void start() {
+        System.out.println("Engine started...");
+    }
+}
+---------------
+package com.example.annotationdi;
+
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+@ComponentScan("com.example.annotationdi")
+public class AppConfig {
+}
+-------------------
+package com.example.annotationdi;
+
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+
+public class MainApp {
+
+    public static void main(String[] args) {
+
+        ApplicationContext context =
+                new AnnotationConfigApplicationContext(AppConfig.class);
+
+        Car car = context.getBean(Car.class);
+        car.run();
+    }
+}
+----------
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.example.IJ</groupId>
+  <artifactId>SpringDIJ</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <dependencies>
+  <dependency>
+    <groupId>org.springframework</groupId>
+    <artifactId>spring-context</artifactId>
+    <version>5.3.39</version>
+  </dependency>
+</dependencies>
+
+</project>
+===============================================
+
+
+
+
+ 
+================================
+1.assignment 1:inheritance and polymorphism
+objective
+understand inheritance and method overriding
+problem statement
+
+Create a class Employee
+Fileds :name,salary
+Method:calculateSalary()
+Create a subclass Manager that extends Employee
+override calculateSalary() to add a bonus
+in the main() method 
+create an Employee object
+create a Manager object
+Call calculateSalary() for both and print the result
+
+concepts used 
+inheritance
+polymorphism
+Method overriding
+----------------
+class Employee {
+
+    String name;
+    double salary;
+
+    Employee(String name, double salary) {
+        this.name = name;
+        this.salary = salary;
+    }
+
+    double calculateSalary() {
+        return salary;
+    }
+}
+class Manager extends Employee {
+
+    double bonus;
+
+    Manager(String name, double salary, double bonus) {
+        super(name, salary);
+        this.bonus = bonus;
+    }
+
+    @Override
+    double calculateSalary() {
+        return salary + bonus;
+    }
+}
+public class Main {
+
+    public static void main(String[] args) {
+
+        Employee emp = new Employee("kamal", 40000);
+        Employee mgr = new Manager("ram", 50000, 20000);
+        System.out.println("Employee Salary: " + emp.calculateSalary());
+        System.out.println("Manager Salary: " + mgr.calculateSalary());
+    }
+}
+==============================================================================================
+2.Assignment
+
+2.Assignment 2:Interface and Implemenatation objective understand Interface and Loose Coupling Problem statement 
+Create an interface payment Method payAmount() 
+Create two classes CreditCardPayment DebitCardPayment 
+Both should implement payment in the main() method use interface reference Call PayAmount() for different implementations 
+concepts used Interface Runtime Polymorphism Loose Coupling
+------------------------------------------------------------
+interface Payment {
+    void payAmount();
+}
+class CreditCardPayment implements Payment {
+
+    @Override
+    public void payAmount() {
+        System.out.println("Payment made using Credit Card");
+    }
+}
+class DebitCardPayment implements Payment {
+
+    @Override
+    public void payAmount() {
+        System.out.println("Payment made using Debit Card");
+    }
+}
+public class Main {
+
+    public static void main(String[] args) {
+
+        Payment payment;
+
+        payment = new CreditCardPayment();
+        payment.payAmount();
+
+        payment = new DebitCardPayment();
+        payment.payAmount();
+    }
+}
+===============
+ouput:Payment made using Credit Card
+Payment made using Debit Card
+
